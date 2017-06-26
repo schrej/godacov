@@ -24,13 +24,13 @@ type fileCoverage struct {
 }
 
 type codacyCoverageJSON struct {
-	Total       float64                  `json:"total"`
+	Total       int                      `json:"total"`
 	FileReports []codacyFileCoverageJSON `json:"fileReports"`
 }
 
 type codacyFileCoverageJSON struct {
 	Filename string      `json:"filename"`
-	Total    float64     `json:"total"`
+	Total    int         `json:"total"`
 	Coverage map[int]int `json:"coverage"`
 }
 
@@ -66,16 +66,16 @@ func GenerateCoverageJSON(coverageFile string) ([]byte, error) {
 	}
 
 	total, perFile := calculatePercentages(files)
-	fmt.Println(total, perFile)
+	//fmt.Println(total, perFile)
 
 	covJSON := codacyCoverageJSON{}
-	covJSON.Total = total * 100
+	covJSON.Total = int(total * 100)
 	covJSON.FileReports = make([]codacyFileCoverageJSON, 0)
 
 	for filename, fileCoverage := range perFile {
 		fileCov := codacyFileCoverageJSON{}
 		fileCov.Filename = filename
-		fileCov.Total = fileCoverage * 100
+		fileCov.Total = int(fileCoverage * 100)
 		fileCov.Coverage = files[filename].lines
 		covJSON.FileReports = append(covJSON.FileReports, fileCov)
 	}
@@ -84,6 +84,8 @@ func GenerateCoverageJSON(coverageFile string) ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
+
+	fmt.Println(string(json))
 
 	return json, nil
 }
