@@ -95,7 +95,10 @@ func run(cmd *cobra.Command, args []string) {
 	}
 	defer res.Body.Close()
 
-	fmt.Println("Response Code: ", res.Status)
-	body, _ := ioutil.ReadAll(res.Body)
-	fmt.Println("response Body:", string(body))
+	if res.Status == "200 OK" {
+		fmt.Println("Successfully postet coverage to Codacy.")
+	} else {
+		body, _ := ioutil.ReadAll(res.Body)
+		fmt.Println("Failed to post: ", string(body))
+	}
 }

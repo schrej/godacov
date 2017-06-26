@@ -3,7 +3,6 @@ package coverage
 import (
 	"encoding/json"
 	"errors"
-	"fmt"
 	"io/ioutil"
 	"regexp"
 	"strconv"
@@ -66,7 +65,6 @@ func GenerateCoverageJSON(coverageFile string) ([]byte, error) {
 	}
 
 	total, perFile := calculatePercentages(files)
-	//fmt.Println(total, perFile)
 
 	covJSON := codacyCoverageJSON{}
 	covJSON.Total = int(total * 100)
@@ -84,8 +82,6 @@ func GenerateCoverageJSON(coverageFile string) ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
-
-	fmt.Println(string(json))
 
 	return json, nil
 }
