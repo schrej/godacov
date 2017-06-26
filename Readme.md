@@ -14,9 +14,14 @@ Run your tests and generate the coverage report.
 ```
 go test -coverprofile=coverage.out
 ```
-
-Publish the results to Codacy using
+If you have multiple Packages, have a look at [haya14busa/goverage](https://github.com/haya14busa/goverage). As a shortcut, this should work:
 ```
+goverage -v -coverprofile=coverprofile.out ./...
+```
+
+Finally publish the results to Codacy using
+```
+go get -u github.com/haya14busa/goverage
 godacov -t <project token> -r ./coverage.out -c <current commit id>
 ```
 
