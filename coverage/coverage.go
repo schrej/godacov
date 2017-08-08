@@ -3,6 +3,7 @@ package coverage
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"io/ioutil"
 	"regexp"
 	"strconv"
@@ -34,11 +35,16 @@ type codacyFileCoverageJSON struct {
 }
 
 var regex *regexp.Regexp
+var regexpStringFilename = `(?P<filename>[a-zA-Z\/\._\d]*)`
+var regexpStringLine = `(?P<line>\d*)`
+var regexpStringNumStatements = `(?P<nstatements>\d*)`
+var regexpStringCountStatements = `(?P<cstatements>\d*)`
+var regexpString = fmt.Sprintf(`%s:%s\..* %s %s`, regexpStringFilename, regexpStringLine, regexpStringNumStatements, regexpStringCountStatements)
 
 // GenerateCoverageJSON generates a json string containing
 // coverage information in codacy's format
 func GenerateCoverageJSON(coverageFile string) ([]byte, error) {
-	regex, _ = regexp.Compile(`([a-zA-Z\/\.]*):(\d*)\..* (\d*) (\d*)`)
+	regex, _ = regexp.Compile(regexpString)
 
 	dat, err := ioutil.ReadFile(coverageFile)
 	lines := strings.Split(string(dat), "\n")
@@ -88,7 +94,6 @@ func GenerateCoverageJSON(coverageFile string) ([]byte, error) {
 
 func parseLine(line string) (reportLine, error) {
 	result := regex.FindStringSubmatch(line)
-
 	if len(result) >= 5 {
 		line, err := strconv.Atoi(result[2])
 		if err != nil {
@@ -128,4 +133,8 @@ func calculatePercentage(num int, cnt int) float64 {
 		return 0
 	}
 	return float64(cnt) / float64(num)
+}
+
+func compileRegexp() (*regexp.Regexp, error) {
+	return regexp.Compile(regexpString)
 }
