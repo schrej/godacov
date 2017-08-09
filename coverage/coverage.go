@@ -34,11 +34,16 @@ type codacyFileCoverageJSON struct {
 	Coverage map[int]int `json:"coverage"`
 }
 
+const (
+	ModeSet = "set"
+)
+
 var regex *regexp.Regexp
 var regexpStringFilename = `(?P<filename>[a-zA-Z\/\._\d]*)`
 var regexpStringLine = `(?P<line>\d*)`
 var regexpStringNumStatements = `(?P<nstatements>\d*)`
 var regexpStringCountStatements = `(?P<cstatements>\d*)`
+var regexpStringMode = `mode: ([set|count|atomic]*)`
 var regexpString = fmt.Sprintf(`%s:%s\..* %s %s`, regexpStringFilename, regexpStringLine, regexpStringNumStatements, regexpStringCountStatements)
 
 // GenerateCoverageJSON generates a json string containing
@@ -122,6 +127,7 @@ func calculatePercentages(files map[string]*fileCoverage) (float64, map[string]f
 	for file, coverage := range files {
 		totalNumStatements += coverage.numStatements
 		totalCntStatements += coverage.cntStatements
+		fmt.Println(totalNumStatements, totalCntStatements)
 		percentages[file] = calculatePercentage(coverage.numStatements, coverage.cntStatements)
 	}
 
