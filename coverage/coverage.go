@@ -18,9 +18,10 @@ type reportLine struct {
 }
 
 type fileCoverage struct {
-	numStatements int
-	cntStatements int
-	lines         map[int]int
+	numStatements     int
+	cntStatements     int
+	coveredStatements int
+	lines             map[int]int
 }
 
 type codacyCoverageJSON struct {
@@ -63,7 +64,6 @@ func GenerateCoverageJSON(coverageFile string) ([]byte, error) {
 		if err != nil {
 			return nil, err
 		}
-		//fmt.Println(parsed)
 		file := files[parsed.file]
 		if file == nil {
 			file = new(fileCoverage)
@@ -72,19 +72,22 @@ func GenerateCoverageJSON(coverageFile string) ([]byte, error) {
 		}
 		file.cntStatements += parsed.cntStatements
 		file.numStatements += parsed.numStatements
+		if parsed.cntStatements > 0 {
+			file.coveredStatements += parsed.numStatements
+		}
 		file.lines[parsed.line] += parsed.cntStatements
 	}
 
 	total, perFile := calculatePercentages(files)
 
 	covJSON := codacyCoverageJSON{}
-	covJSON.Total = int(total * 100)
+	covJSON.Total = total
 	covJSON.FileReports = make([]codacyFileCoverageJSON, 0)
 
 	for filename, fileCoverage := range perFile {
 		fileCov := codacyFileCoverageJSON{}
 		fileCov.Filename = filename
-		fileCov.Total = int(fileCoverage * 100)
+		fileCov.Total = fileCoverage
 		fileCov.Coverage = files[filename].lines
 		covJSON.FileReports = append(covJSON.FileReports, fileCov)
 	}
@@ -119,26 +122,28 @@ func parseLine(line string) (reportLine, error) {
 	return reportLine{}, errors.New("Invalid line format")
 }
 
-func calculatePercentages(files map[string]*fileCoverage) (float64, map[string]float64) {
+func calculatePercentages(files map[string]*fileCoverage) (int, map[string]int) {
 	totalNumStatements := 0
 	totalCntStatements := 0
-	percentages := make(map[string]float64)
+	totalCoveredStatements := 0
+	percentages := make(map[string]int)
 
 	for file, coverage := range files {
 		totalNumStatements += coverage.numStatements
 		totalCntStatements += coverage.cntStatements
-		fmt.Println(totalNumStatements, totalCntStatements)
-		percentages[file] = calculatePercentage(coverage.numStatements, coverage.cntStatements)
+		totalCoveredStatements += coverage.coveredStatements
+		percentages[file] = calculatePercentage(coverage.numStatements, coverage.coveredStatements)
 	}
 
-	return calculatePercentage(totalNumStatements, totalCntStatements), percentages
+	return calculatePercentage(totalNumStatements, totalCoveredStatements), percentages
 }
 
-func calculatePercentage(num int, cnt int) float64 {
+func calculatePercentage(num int, cvd int) int {
 	if num == 0 {
 		return 0
 	}
-	return float64(cnt) / float64(num)
+
+	return cvd * 100 / num
 }
 
 func compileRegexp() (*regexp.Regexp, error) {
