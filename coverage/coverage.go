@@ -40,10 +40,10 @@ const (
 )
 
 var regex *regexp.Regexp
-var regexpStringFilename = `(?P<filename>[a-zA-Z\/\._\d]*)`
-var regexpStringLine = `(?P<line>\d*)`
-var regexpStringNumStatements = `(?P<nstatements>\d*)`
-var regexpStringCountStatements = `(?P<cstatements>\d*)`
+var regexpStringFilename = `([a-zA-Z\/\._\d]*)`
+var regexpStringLine = `(\d*)`
+var regexpStringNumStatements = `(\d*)`
+var regexpStringCountStatements = `(\d*)`
 var regexpStringMode = `mode: ([set|count|atomic]*)`
 var regexpString = fmt.Sprintf(`%s:%s\..* %s %s`, regexpStringFilename, regexpStringLine, regexpStringNumStatements, regexpStringCountStatements)
 
