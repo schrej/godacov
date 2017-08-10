@@ -41,10 +41,9 @@ const (
 
 var regex *regexp.Regexp
 var regexpStringFilename = `([a-zA-Z\/\._\d]*)`
-var regexpStringLine = `(\d*)`
-var regexpStringStats = `(\d*)`
+var regexpStringStat = `(\d*)`
 var regexpStringMode = `mode: ([set|count|atomic]*)`
-var regexpString = fmt.Sprintf(`%s:%s\..* %s %s`, regexpStringFilename, regexpStringLine, regexpStringStats, regexpStringStats)
+var regexpString = fmt.Sprintf(`%s:%s\..* %s %s`, regexpStringFilename, regexpStringStat, regexpStringStat, regexpStringStat)
 
 // GenerateCoverageJSON generates a json string containing
 // coverage information in codacy's format
