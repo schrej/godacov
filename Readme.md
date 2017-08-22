@@ -5,7 +5,7 @@ godacov is a command-line tool to publish test coverage reports generated with `
 ## How to use
 Install godacov using `go get`
 ```
-$ go get github.com/schrej/godacy
+$ go get github.com/schrej/godacov
 ```
 
 Retrieve a project token from codacy from `Your Project > Settings > Integrations > Project API`.
@@ -18,7 +18,7 @@ go test -coverprofile=coverage.out
 If you have multiple Packages, have a look at [haya14busa/goverage](https://github.com/haya14busa/goverage). As a shortcut, this should work:
 ```
 go get -u github.com/haya14busa/goverage
-goverage -v -coverprofile=coverprofile.out ./...
+goverage -v -coverprofile=coverage.out ./...
 ```
 
 Finally publish the results to Codacy using
