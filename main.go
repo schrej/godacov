@@ -13,7 +13,7 @@
 
 package main
 
-import "github.com/schrej/godacov/cmd"
+import "github.com/stlimtat/godacov/cmd"
 
 func main() {
 	cmd.Execute()
