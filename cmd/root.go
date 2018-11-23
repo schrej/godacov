@@ -24,8 +24,8 @@ import (
 	"github.com/spf13/cobra"
 )
 
-const url = "https://%s/2.0/coverage/%s/go"
-const defaultApiBase = "api.codacy.com"
+const url = "%s/2.0/coverage/%s/go"
+const defaultApiBase = "https://api.codacy.com"
 
 var coverageFile string
 var codacyToken string
