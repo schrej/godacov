@@ -21,7 +21,7 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/fclaude/godacov/coverage"
+	"github.com/schrej/godacov/coverage"
 	"github.com/spf13/cobra"
 )
 
