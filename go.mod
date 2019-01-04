@@ -1,4 +1,4 @@
-module github.com/fclaude/godacov
+module github.com/schrej/godacov
 
 require (
 	github.com/spf13/cobra v0.0.3
