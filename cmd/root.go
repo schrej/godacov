@@ -15,6 +15,7 @@ package cmd
 
 import (
 	"bytes"
+	"crypto/tls"
 	"fmt"
 	"io/ioutil"
 	"net/http"
@@ -31,6 +32,7 @@ var coverageFile string
 var codacyToken string
 var commitHash string
 var codacyAPIBase string
+var allowInsecure bool
 
 // RootCmd represents the base command when called without any subcommands
 var RootCmd = &cobra.Command{
@@ -59,6 +61,7 @@ func init() {
 	RootCmd.Flags().StringVarP(&codacyToken, "token", "t", "", "Codacy project token")
 	RootCmd.Flags().StringVarP(&commitHash, "commit", "c", "", "The hash of the commit to provide coverage for")
 	RootCmd.Flags().StringVarP(&codacyAPIBase, "api-base", "a", defaultApiBase, "The base URL of the codacy API server to use")
+	RootCmd.Flags().BoolVarP(&allowInsecure, "allow-insecure", "i", false, "Allow insecure connection to base URL")
 }
 
 func run(cmd *cobra.Command, args []string) {
@@ -92,6 +95,12 @@ func run(cmd *cobra.Command, args []string) {
 	req.Header.Set("Content-Type", "application/json")
 
 	client := &http.Client{}
+	if allowInsecure {
+		tr := &http.Transport{
+			TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+		}
+		client.Transport = tr
+	}
 	res, err := client.Do(req)
 	if err != nil {
 		panic(err)
