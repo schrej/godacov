@@ -57,7 +57,10 @@ func GenerateCoverageJSON(coverageFile string) ([]byte, error) {
 	}
 
 	files := make(map[string]*fileCoverage)
-	for _, line := range lines[1 : len(lines)-1] {
+	for _, line := range lines {
+		if isSkippableLine(line) {
+			continue
+		}
 		parsed, err := parseLine(line)
 		if err != nil {
 			return nil, err
@@ -118,6 +121,10 @@ func parseLine(line string) (reportLine, error) {
 	}
 
 	return reportLine{}, errors.New("Invalid line format")
+}
+
+func isSkippableLine(line string) bool {
+	return (len(strings.TrimSpace(line)) == 0) || strings.HasPrefix(line, "mode")
 }
 
 func calculatePercentages(files map[string]*fileCoverage) (int, map[string]int) {
