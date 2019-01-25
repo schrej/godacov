@@ -82,3 +82,15 @@ func expectParseLineFails(t *testing.T, line string) {
 	}
 	t.Error("expected an error")
 }
+
+func TestSkippableLine(t *testing.T) {
+	if !isSkippableLine(" ") {
+		t.Error("empty lines should be skipped")
+	}
+	if !isSkippableLine("mode: atomic") {
+		t.Error("lines only reporting coverage mode should be skipped")
+	}
+	if isSkippableLine("something else") {
+		t.Error("by default lines should not be skipped")
+	}
+}
