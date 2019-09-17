@@ -1,5 +1,4 @@
-# godacov
-[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fschrej%2Fgodacov.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2Fschrej%2Fgodacov?ref=badge_shield)
+# godacov [![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fschrej%2Fgodacov.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2Fschrej%2Fgodacov)
 
 
 godacov is a command-line tool to publish test coverage reports generated with `go test -coverprofile=<filename>` to [Codacy](https://codacy.com).
