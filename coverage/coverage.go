@@ -1,10 +1,11 @@
 package coverage
 
 import (
+	"bufio"
 	"encoding/json"
 	"errors"
 	"fmt"
-	"io/ioutil"
+	"os"
 	"regexp"
 	"strconv"
 	"strings"
@@ -12,7 +13,8 @@ import (
 
 type reportLine struct {
 	file          string
-	line          int
+	lineFrom      int
+	lineTo        int
 	numStatements int
 	cntStatements int
 }
@@ -41,42 +43,56 @@ const (
 
 var regex *regexp.Regexp
 var regexpStringFilename = `([a-zA-Z\/\._\d]*)`
-var regexpStringStat = `(\d*)`
+var regexpStringStat = `(\d+)`
 var regexpStringMode = `mode: ([set|count|atomic]*)`
-var regexpString = fmt.Sprintf(`%s:%s\..* %s %s`, regexpStringFilename, regexpStringStat, regexpStringStat, regexpStringStat)
+var regexpString = fmt.Sprintf(`%s:%s.*?,%s.* %s %s`, regexpStringFilename, regexpStringStat, regexpStringStat, regexpStringStat, regexpStringStat)
 
 // GenerateCoverageJSON generates a json string containing
 // coverage information in codacy's format
 func GenerateCoverageJSON(coverageFile string) ([]byte, error) {
 	regex, _ = regexp.Compile(regexpString)
 
-	dat, err := ioutil.ReadFile(coverageFile)
-	lines := strings.Split(string(dat), "\n")
+	fileReader, err := os.Open(coverageFile)
+	defer func() { _ = fileReader.Close() }()
 	if err != nil {
 		return nil, err
 	}
 
+	reader := bufio.NewReader(fileReader)
+
 	files := make(map[string]*fileCoverage)
-	for _, line := range lines {
+	for {
+		line, err := reader.ReadString('\n')
+		if err != nil {
+			break
+		}
+
 		if isSkippableLine(line) {
 			continue
 		}
+
 		parsed, err := parseLine(line)
 		if err != nil {
 			return nil, err
 		}
+
 		file := files[parsed.file]
 		if file == nil {
 			file = new(fileCoverage)
 			files[parsed.file] = file
 			file.lines = make(map[int]int)
 		}
+
 		file.cntStatements += parsed.cntStatements
 		file.numStatements += parsed.numStatements
+
 		if parsed.cntStatements > 0 {
 			file.coveredStatements += parsed.numStatements
 		}
-		file.lines[parsed.line] += parsed.cntStatements
+
+		for i := parsed.lineFrom; i <= parsed.lineTo; i++ {
+			file.lines[i] += parsed.cntStatements
+		}
 	}
 
 	total, perFile := calculatePercentages(files)
@@ -103,24 +119,30 @@ func GenerateCoverageJSON(coverageFile string) ([]byte, error) {
 
 func parseLine(line string) (reportLine, error) {
 	result := regex.FindStringSubmatch(line)
-	if len(result) >= 5 {
-		line, err := strconv.Atoi(result[2])
-		if err != nil {
-			return reportLine{}, err
-		}
-		numStatements, err := strconv.Atoi(result[3])
-		if err != nil {
-			return reportLine{}, err
-		}
-		cntStatements, err := strconv.Atoi(result[4])
+	if len(result) >= 6 {
+		lineFrom, err := strconv.Atoi(result[2])
 		if err != nil {
 			return reportLine{}, err
 		}
 
-		return reportLine{result[1], line, numStatements, cntStatements}, nil
+		lineTo, err := strconv.Atoi(result[3])
+		if err != nil {
+			return reportLine{}, err
+		}
+
+		numStatements, err := strconv.Atoi(result[4])
+		if err != nil {
+			return reportLine{}, err
+		}
+		cntStatements, err := strconv.Atoi(result[5])
+		if err != nil {
+			return reportLine{}, err
+		}
+
+		return reportLine{result[1], lineFrom, lineTo, numStatements, cntStatements}, nil
 	}
 
-	return reportLine{}, errors.New("Invalid line format")
+	return reportLine{}, errors.New("invalid line format")
 }
 
 func isSkippableLine(line string) bool {
