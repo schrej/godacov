@@ -42,7 +42,7 @@ const (
 )
 
 var regex *regexp.Regexp
-var regexpStringFilename = `([a-zA-Z\/\._\d]*)`
+var regexpStringFilename = `([a-zA-Z\/\._\-\d]*)`
 var regexpStringStat = `(\d+)`
 var regexpStringMode = `mode: ([set|count|atomic]*)`
 var regexpString = fmt.Sprintf(`%s:%s.*?,%s.* %s %s`, regexpStringFilename, regexpStringStat, regexpStringStat, regexpStringStat, regexpStringStat)
@@ -96,7 +96,7 @@ func GenerateCoverageJSON(coverageFile string) ([]byte, error) {
 	}
 
 	total, perFile := calculatePercentages(files)
-
+	
 	covJSON := codacyCoverageJSON{}
 	covJSON.Total = total
 	covJSON.FileReports = make([]codacyFileCoverageJSON, 0)
