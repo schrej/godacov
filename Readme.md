@@ -1,3 +1,7 @@
+**NOTE**: Codacy now supports [Golang coverage reports directly](https://docs.codacy.com/coverage-reporter/#submitting-coverage-for-golang). This tool is therefore no longer required to submit coverage reports.
+
+---
+
 # godacov [![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fschrej%2Fgodacov.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2Fschrej%2Fgodacov) [![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=schrej_godacov&metric=security_rating)](https://sonarcloud.io/dashboard?id=schrej_godacov)
 
 
@@ -15,11 +19,6 @@ Run your tests and generate the coverage report.
 ```
 
 go test -coverprofile=coverage.out
-```
-If you have multiple Packages, have a look at [haya14busa/goverage](https://github.com/haya14busa/goverage). As a shortcut, this should work:
-```
-go get -u github.com/haya14busa/goverage
-goverage -v -coverprofile=coverage.out ./...
 ```
 
 Finally publish the results to Codacy using
